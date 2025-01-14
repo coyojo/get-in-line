@@ -16,4 +16,5 @@ public class EventController {
     public String eventDetail(@PathVariable Integer eventId){
         return "event/detail";
     }
+
 }
