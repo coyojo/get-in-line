@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class GeneralException extends RuntimeException {
-    //RuntimeException 을 상속받아 메서드 재정의 
+    //RuntimeException 을 상속받아 메서드 재정의, 에러코드를 넣어주기 위해서 재정의
     private final ErrorCode errorCode;
 
     public GeneralException() {
