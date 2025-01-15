@@ -9,9 +9,10 @@
     This is admin places page.
 </p>
 <ul>
-    <li>placeType: <span th:text="${placeType}">?</span></li>
-    <li>placeType: <span th:text="${placeName}">?</span></li>
-    <li>placeType: <span th:text="${address}">?</span></li>
+    <li>placeType: <span th:text="${placeType}?:_">!</span></li>
+    <!-- ${}?:_를 쓰는 이유는 템플릿 엔진에서  변수값이 없으면 기본값으로 ! 를 표시하라는것-->
+    <li>placeType: <span th:text="${placeName}?:_">!</span></li>
+    <li>placeType: <span th:text="${address}?:_">!</span></li>
 </ul>
 
 
