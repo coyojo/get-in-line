@@ -10,15 +10,48 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Map;
+
 //뷰에대한 ExceptionHandler
 @ControllerAdvice
 public class BaseExceptionHandler {
     @ExceptionHandler
-    public ResponseEntity<APIErrorResponse> general(HttpServletResponse response){
-        HttpStatus status = HttpStatus.valueOf(response.getStatus());
-        ErrorCode errorCode = status.is4xxClientError()? ErrorCode.BAD_REQUEST : ErrorCode.INTERNAL_ERROR;
-        return ResponseEntity.status(status)
-                .body(APIErrorResponse.of(false,errorCode));
+    public ModelAndView general(GeneralException e){
+        ErrorCode errorCode = e.getErrorCode();
+        HttpStatus status = errorCode.isClientSideError()?
+                HttpStatus.BAD_REQUEST :
+                HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return new ModelAndView(
+                "error",
+                Map.of("statusCode", status.value(),
+                        "errorCode", errorCode,
+                        "message", errorCode.getMessage(e)
+                ),
+                status
+
+        );
+
     }
+
+    @ExceptionHandler
+    public ModelAndView exception(Exception e){
+        ErrorCode errorCode = ErrorCode.INTERNAL_ERROR;
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+
+        return new ModelAndView(
+                "error",
+                Map.of("statusCode", status.value(),
+                        "errorCode", errorCode,
+                        "message", errorCode.getMessage(e)
+                ),
+                status
+
+        );
+
+    }
+
+
 
 }
