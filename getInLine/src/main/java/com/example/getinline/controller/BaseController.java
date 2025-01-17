@@ -9,9 +9,8 @@ public class BaseController {
     //Error페이지를 커스텀한 페이지로 쓰려먼 ErrorController를 implements 해줘야한다
 
     @GetMapping("/")
-    public String root() throws Exception {
-        throw new Exception("테스트");
-        //return "index";
+    public String root()  {
+        return "index";
     }
 
 

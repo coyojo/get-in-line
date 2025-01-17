@@ -10,10 +10,10 @@ import java.util.List;
 import static org.springframework.web.servlet.function.RequestPredicates.path;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 
-@Configuration
+//@Configuration
 public class APIPlaceRouter {
     //APIPlaceController를 함수형 으로 바꾼 내용!
-    @Bean
+   // @Bean
     public RouterFunction<ServerResponse> placeRouter(APIPlaceHandler apiPlaceHandler){
         return route().nest(path("/api/places"),builder -> builder
                 .GET("", apiPlaceHandler::getPlaces)
