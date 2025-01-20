@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class APIEventController {
-    @GetMapping("/events")
+    @GetMapping("/events")  //전체 리스트 조회
     public APIDataResponse<List<EventResponse>> getEvents() {
         return APIDataResponse.of(List.of(EventResponse.of(
                 1L,
@@ -28,14 +28,14 @@ public class APIEventController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/events")
+    @PostMapping("/events")  // 이벤트 생성
     public APIDataResponse<Void> createEvent(@RequestBody EventRequest eventRequest){
         return APIDataResponse.empty();
 
        // return true;
     }
 
-    @GetMapping("/events/{eventId}")
+    @GetMapping("/events/{eventId}")  // 단건 조회
     public APIDataResponse<EventResponse> getEvent(@PathVariable Long eventId) {
         if (eventId.equals(2L)) {
             return APIDataResponse.empty();
@@ -52,7 +52,7 @@ public class APIEventController {
         ));
     }
 
-    @PutMapping("events/{eventId}")
+    @PutMapping("events/{eventId}") // 수정
     public APIDataResponse<Void> modifyEvent(
             @PathVariable Long eventId,
             @RequestBody EventRequest eventRequest
@@ -60,7 +60,7 @@ public class APIEventController {
         return APIDataResponse.empty();
     }
 
-    @DeleteMapping("/events/{eventId}")
+    @DeleteMapping("/events/{eventId}")// 삭제
     public APIDataResponse<Void> removeEvent(@PathVariable Long eventId) {
         return APIDataResponse.empty();
     }
