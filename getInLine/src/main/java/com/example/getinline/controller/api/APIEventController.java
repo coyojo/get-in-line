@@ -1,36 +1,70 @@
 package com.example.getinline.controller.api;
 
-import com.example.getinline.exception.GeneralException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
+import com.example.getinline.constant.EventStatus;
+import com.example.getinline.dto.APIDataResponse;
+import com.example.getinline.dto.EventRequest;
+import com.example.getinline.dto.EventResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class APIEventController {
     @GetMapping("/events")
-    public List<String> getEvents() throws Exception{
-        throw new HttpRequestMethodNotSupportedException("스프링 에러 테스트");
-        //return List.of("event1","event2");
+    public APIDataResponse<List<EventResponse>> getEvents() {
+        return APIDataResponse.of(List.of(EventResponse.of(
+                1L,
+                "오후 운동",
+                EventStatus.OPENED,
+                LocalDateTime.of(2021, 1, 1, 13, 0, 0),
+                LocalDateTime.of(2021, 1, 1, 16, 0, 0),
+                0,
+                24,
+                "마스크 꼭 착용하세요"
+        )));
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/events")
-    public Boolean createEvent(){
-        throw new RuntimeException("runtime 테스트 메세지");
+    public APIDataResponse<Void> createEvent(@RequestBody EventRequest eventRequest){
+        return APIDataResponse.empty();
+
        // return true;
     }
 
     @GetMapping("/events/{eventId}")
-    public String getEvent(@PathVariable Integer eventId){
-        return "event" + eventId;
+    public APIDataResponse<EventResponse> getEvent(@PathVariable Long eventId) {
+        if (eventId.equals(2L)) {
+            return APIDataResponse.empty();
+        }
+        return APIDataResponse.of(EventResponse.of(
+                1L,
+                "오후 운동",
+                EventStatus.OPENED,
+                LocalDateTime.of(2021, 1, 1, 13, 0, 0),
+                LocalDateTime.of(2021, 1, 1, 16, 0, 0),
+                0,
+                24,
+                "마스크 꼭 착용하세요"
+        ));
     }
 
     @PutMapping("events/{eventId}")
-    public Boolean modifyEvent(@PathVariable Integer eventId){return true;}
+    public APIDataResponse<Void> modifyEvent(
+            @PathVariable Long eventId,
+            @RequestBody EventRequest eventRequest
+    ) {
+        return APIDataResponse.empty();
+    }
 
     @DeleteMapping("/events/{eventId}")
-    public Boolean removeEvent(@PathVariable Integer eventId){return true;}
+    public APIDataResponse<Void> removeEvent(@PathVariable Long eventId) {
+        return APIDataResponse.empty();
+    }
+
 
 
 }
