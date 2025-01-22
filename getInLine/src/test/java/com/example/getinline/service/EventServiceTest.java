@@ -2,36 +2,59 @@ package com.example.getinline.service;
 
 import com.example.getinline.constant.EventStatus;
 import com.example.getinline.dto.EventDTO;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.awaitility.Awaitility.given;
-import static org.mockito.Mockito.verify;
-
+import com.example.getinline.repository.EventRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class EventServiceTest {
-    private EventService sut;
+    @InjectMocks private EventService sut;
+    @Mock private EventRepository eventRepository;
+    //이렇게 해주면 Mokito가 eventRepository를 우라가 테스트 하고자 하는 sut에 주입해준다
+
 
     @DisplayName("검색 조건 없이 검색하면 전체 이벤트 리스트를 출력하여 보여준다")
     @Test
     void getEventsTest() {
         //given
-
-        //when
+        //이렇게 다 null값일 때 아래의 리스트 2개를 리턴해달라는 의미이다.
+        given(eventRepository.findEvents(null,null,null,null,null))
+                .willReturn(List.of(
+                        createEventDTO(1L, "오전 운동", true),
+                        createEventDTO(1L, "오후 운동", false)
+                ));
+    //when
          List<EventDTO> list = sut.getEvents(null,null,null,null,null);
-        assertThat(list).hasSize(2);
+
 
         //then
 
+        assertThat(list).hasSize(2);
+        //verify는 given과 다르게 ()밖에서 repository에 있는 메서드를 적어준다.
+       // verify(eventRepository).findEvents(null,null,null,null,null);
+        //verify(mock, times(1)).someMethod("some arg") 즉 1번 호출됬다는 역할을 한다.
+
+        // BBD 모키토 방식으로 쓰면 아래와 같은 코드를 쓰고 이건 바로 윗줄의 verify 코드와 같은 수행을 한다
+        then(eventRepository).should().findEvents(null,null,null,null,null);
+
+
     }
 
-    @DisplayName("검색 조건과 함께 이벤트 검색하면 검색된 결과를 출력하여 보여준다")
+    @DisplayName("검색 조건과 함께 이벤트 검색하면 검색된 결과 하나를 출력하여 보여준다")
     @Test
     void getEventsTest2() {
         //given
@@ -40,6 +63,11 @@ class EventServiceTest {
         EventStatus eventStatus = EventStatus.OPENED;
         LocalDateTime eventStartDatetime = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
         LocalDateTime eventEndDatetime = LocalDateTime.of(2021, 1, 2, 0, 0, 0);
+
+        given(eventRepository.findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime))
+                .willReturn(List.of(
+                        createEventDTO(1L,"오전 운동",eventStatus,eventStartDatetime,eventEndDatetime)
+                        ));
 
         //when
         List<EventDTO> list = sut.getEvents(placeId, eventName, eventStatus, eventStartDatetime, eventEndDatetime);
@@ -54,7 +82,8 @@ class EventServiceTest {
                     assertThat(event.eventStartDatetime()).isAfterOrEqualTo(eventStartDatetime); //검색한 내용의 시작시간이 내 검색어의 시작 시간보다 더 뒤에있거나 같은때
                     assertThat(event.eventEndDatetime()).isBeforeOrEqualTo(eventEndDatetime);
                     });// 조건에 맞는 이벤트가 여러개 있을때는 해당 assertion을 다 수행한다.
-        }
+        then(eventRepository).should().findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime);
+    }
 
     @Test
     @DisplayName("이벤트 ID로 존재하는 이벤트를 조회하면, 해당 이벤트 정보를 출력하여 보여준다")
@@ -62,12 +91,14 @@ class EventServiceTest {
         //given
         Long eventId = 1L;
         EventDTO eventDTO = createEventDTO(1L,"오전운동",true);
-
+       //존재하는 이벤트 조회니까 eventDTO를 Optional에 넣어서 보내준다.
+        given(eventRepository.findEvent(eventId)).willReturn(Optional.of(eventDTO));
         //when
         Optional<EventDTO> result = sut.findEvent(eventId);
 
         //then
         assertThat(result).hasValue(eventDTO);
+        then(eventRepository).should().findEvent(eventId);
     }
 
 
@@ -77,19 +108,46 @@ class EventServiceTest {
     void findEventTest2(){
         //given
         Long eventId = 2L;
-       // given(eventRepository.findEvent(eventId)).willReturn(Optional.empty());
+        given(eventRepository.findEvent(eventId)).willReturn(Optional.empty());
 
         //when
         Optional<EventDTO> result = sut.findEvent(eventId);
 
         //then
         assertThat(result).isEmpty();
-      //  verify(eventRepository).findEvent(eventId);
+      verify(eventRepository).findEvent(eventId);
     }
 
 
     @Test
+    @DisplayName("이번트 정보를 주면, 이벤트를 생성하고 결과를 true로 보여준다.")
     void createEvent() {
+        //given
+        EventDTO dto = createEventDTO(1L,"오후 운동", false);
+        given(eventRepository.insertEvent(dto)).willReturn(true);
+
+        //when
+        boolean result = sut.createEvent(dto);
+
+        //then
+        assertThat(result).isTrue();
+        verify(eventRepository).insertEvent(dto);
+
+    }
+
+    @Test
+    @DisplayName("이번트 정보를 주지 않으면, 이벤트를 생성 중단하고 결과를 false로 보여준다.")
+    void createfalseEvent() {
+        //given
+        given(eventRepository.insertEvent(null)).willReturn(false);
+
+        //when
+        boolean result = sut.createEvent(null);
+
+        //then
+        assertThat(result).isFalse();
+        verify(eventRepository).insertEvent(null);
+
     }
 
     @Test
@@ -152,13 +210,12 @@ class EventServiceTest {
     @DisplayName("이벤트 ID를 주지 않으면, 이벤트 삭제 결과를 false로 보여준디")
     void removeFalse() {
         //given
-        Long eventId = 1L;
 
         //when
-        boolean result = sut.removeEvent(eventId);
+        boolean result = sut.removeEvent(null);
 
         //then
-        assertThat(result).isTrue();
+        assertThat(result).isFalse();
 
     }
 

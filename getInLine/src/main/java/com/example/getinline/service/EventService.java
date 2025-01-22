@@ -2,6 +2,8 @@ package com.example.getinline.service;
 
 import com.example.getinline.constant.EventStatus;
 import com.example.getinline.dto.EventDTO;
+import com.example.getinline.repository.EventRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
  */
 @Service
+@RequiredArgsConstructor
 public class EventService { //필터링으로 장소 이름 상태 기간을 이용
    /*
    검색어들을 받아서 이벤트 리스트를 변환
@@ -28,6 +31,8 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
 
     */
 
+    private final EventRepository eventRepository;
+
     //1. 전체 리스트 조회
     public List<EventDTO> getEvents(Long placeId,
                                      String eventName,
@@ -35,13 +40,14 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
                                      LocalDateTime eventStartDatetime,
                                      LocalDateTime eventEndDatetime
     ) {
-        return List.of();
+        return eventRepository.findEvents();
     }
 
     //2. 단건 조회
     public Optional<EventDTO> findEvent(Long eventId){
         return Optional.empty();
     }
+
 
 
     //3.이벤트 생성
