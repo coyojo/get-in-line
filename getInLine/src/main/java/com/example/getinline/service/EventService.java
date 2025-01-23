@@ -4,6 +4,7 @@ import com.example.getinline.constant.EventStatus;
 import com.example.getinline.dto.EventDTO;
 import com.example.getinline.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,8 +38,8 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
     public List<EventDTO> getEvents(Long placeId,
                                      String eventName,
                                      EventStatus eventStatus,
-                                     LocalDateTime eventStartDatetime,
-                                     LocalDateTime eventEndDatetime
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventStartDatetime,
+                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime eventEndDatetime
     ) {
         return eventRepository.findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime);
     }

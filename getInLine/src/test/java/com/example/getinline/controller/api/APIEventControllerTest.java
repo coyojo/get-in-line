@@ -2,18 +2,26 @@ package com.example.getinline.controller.api;
 
 import com.example.getinline.constant.ErrorCode;
 import com.example.getinline.constant.EventStatus;
+import com.example.getinline.dto.EventDTO;
 import com.example.getinline.dto.EventResponse;
+import com.example.getinline.service.EventService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.BDDAssumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class APIEventControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper mapper;
+    @MockitoBean private EventService eventService;
+
     public APIEventControllerTest(
             @Autowired MockMvc mvc,
             @Autowired ObjectMapper mapper
@@ -30,10 +40,20 @@ class APIEventControllerTest {
     }
     @DisplayName("[API][GET] 이벤트 리스트 조회")
     @Test
-    void givenNothing_whenRequestingEvents_thenReturnsListOfEventsInStandardResponse() throws Exception {
+    void getList() throws Exception {
         // Given
+        given(eventService.getEvents(any(),any(),any(),any(),any())).willReturn(List.of(createEventDTO()));
+
         // When & Then
-        mvc.perform(get("/api/events"))
+        //QnuertParam으로 검색 조건을 주면
+        mvc.perform(get("/api/events")
+                        .queryParam("placeId","1")  //pueryParam value값은 String만 가능
+                        .queryParam("eventName","오후")
+                        .queryParam("eventStatus",EventStatus.OPENED.name())
+                        .queryParam("eventStartDatetime","2021-01-01T00:00:00")
+                        .queryParam("eventEndDatetime","2021-01-02T00:00:00")
+
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isArray())
@@ -44,7 +64,7 @@ class APIEventControllerTest {
                         .of(2021, 1, 1, 13, 0, 0)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$.data[0].eventEndDatetime").value(LocalDateTime
-                        .of(2021, 1, 1, 16, 0, 0)
+                        .of(2021, 1, 1, 17, 0, 0)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$.data[0].currentNumberOfPeople").value(0))
                 .andExpect(jsonPath("$.data[0].capacity").value(24))
@@ -52,6 +72,9 @@ class APIEventControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.OK.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.OK.getMessage()));
+
+        then(eventService).should().getEvents(any(),any(),any(),any(),any());
+
     }
     @DisplayName("[API][POST] 이벤트 생성")
     @Test
@@ -159,4 +182,22 @@ class APIEventControllerTest {
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.OK.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.OK.getMessage()));
     }
+
+    private EventDTO createEventDTO()
+            {
+        return EventDTO.of(
+                1L,
+                "오후 운동",
+                EventStatus.OPENED,
+                LocalDateTime.of(2021, 1, 1, 13, 0, 0),
+                LocalDateTime.of(2021, 1, 1, 17, 0, 0),
+                0,
+                24,
+                "마스크 꼭 착용하세요",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+
 }
