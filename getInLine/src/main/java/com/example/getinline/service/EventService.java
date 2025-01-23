@@ -3,9 +3,12 @@ package com.example.getinline.service;
 import com.example.getinline.constant.EventStatus;
 import com.example.getinline.dto.EventDTO;
 import com.example.getinline.repository.EventRepository;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Optional;
 5.삭제
 
  */
+@Validated
 @Service
 @RequiredArgsConstructor
 public class EventService { //필터링으로 장소 이름 상태 기간을 이용
@@ -35,11 +39,12 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
     private final EventRepository eventRepository;
 
     //1. 전체 리스트 조회
-    public List<EventDTO> getEvents(Long placeId,
-                                     String eventName,
-                                     EventStatus eventStatus,
-                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventStartDatetime,
-                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime eventEndDatetime
+    public List<EventDTO> getEvents(
+            @Positive Long placeId,
+            @Size(min = 2 ) String eventName,
+            EventStatus eventStatus,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventStartDatetime,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime eventEndDatetime
     ) {
         return eventRepository.findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime);
     }

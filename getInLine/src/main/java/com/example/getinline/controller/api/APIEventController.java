@@ -5,12 +5,17 @@ import com.example.getinline.dto.APIDataResponse;
 import com.example.getinline.dto.EventRequest;
 import com.example.getinline.dto.EventResponse;
 import com.example.getinline.service.EventService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -18,8 +23,8 @@ public class APIEventController {
     private final EventService eventService;
     @GetMapping("/events")  //전체 리스트 조회
     public APIDataResponse<List<EventResponse>> getEvents(
-            Long placeId,
-            String eventName,
+            @Positive Long placeId,
+            @Size(min = 2) String eventName,
             EventStatus eventStatus,
             LocalDateTime eventStartDatetime,
             LocalDateTime eventEndDatetime
@@ -35,7 +40,7 @@ public class APIEventController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/events")  // 이벤트 생성
-    public APIDataResponse<Void> createEvent(@RequestBody EventRequest eventRequest){
+    public APIDataResponse<Void> createEvent(@Valid @RequestBody EventRequest eventRequest){
         return APIDataResponse.empty();
 
        // return true;

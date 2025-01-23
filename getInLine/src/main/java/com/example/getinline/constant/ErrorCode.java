@@ -12,6 +12,7 @@ public enum ErrorCode {
     OK(0, ErrorCategory.NORMAL, "OK"),
     BAD_REQUEST(10000, ErrorCategory.CLIENT_SIDE, "bad request"),
     SPRING_BAD_REQUEST(10001, ErrorCategory.CLIENT_SIDE, "spring-detected bad request"),
+    VALIDATION_ERROR(10002, ErrorCategory.CLIENT_SIDE, "validation error"),
     INTERNAL_ERROR(20000, ErrorCategory.SERVER_SIDE, "internal error"),
     SPRING_INTERNAL_ERROR(20001, ErrorCategory.SERVER_SIDE, "spring-detected internal error")
     ;
@@ -21,7 +22,7 @@ public enum ErrorCode {
     private final String message;
 
     //예외가 있으면 메세지를 내보내게 메서드 생성
-    public String getMessage(Exception e){return getMessage(e.getMessage());}
+    public String getMessage(Exception e){return getMessage(this.getMessage()+" - "+ e.getMessage());}
 
     //메세지를 사용자가 입력하는 경우의 메서드
     public String getMessage(String message){
