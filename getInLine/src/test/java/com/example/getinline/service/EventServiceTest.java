@@ -47,7 +47,6 @@ class EventServiceTest {
         //verify는 given과 다르게 ()밖에서 repository에 있는 메서드를 적어준다.
        // verify(eventRepository).findEvents(null,null,null,null,null);
         //verify(mock, times(1)).someMethod("some arg") 즉 1번 호출됬다는 역할을 한다.
-
         // BBD 모키토 방식으로 쓰면 아래와 같은 코드를 쓰고 이건 바로 윗줄의 verify 코드와 같은 수행을 한다
         then(eventRepository).should().findEvents(null,null,null,null,null);
 
@@ -76,7 +75,7 @@ class EventServiceTest {
                 .hasSize(1)  //검색 조건에 맞는 이벤트 하나일때 하나만 보여주기
                 .allSatisfy(event -> {
                     assertThat(event)
-                            .hasFieldOrPropertyWithValue("palcdId", placeId)
+                            .hasFieldOrPropertyWithValue("placeId", placeId)
                             .hasFieldOrPropertyWithValue("eventName", eventName)
                             .hasFieldOrPropertyWithValue("eventStatus", eventStatus);
                     assertThat(event.eventStartDatetime()).isAfterOrEqualTo(eventStartDatetime); //검색한 내용의 시작시간이 내 검색어의 시작 시간보다 더 뒤에있거나 같은때
@@ -146,8 +145,8 @@ class EventServiceTest {
 
         //then
         assertThat(result).isFalse();
-        verify(eventRepository).insertEvent(null);
-
+       // verify(eventRepository).insertEvent(null);
+        then(eventRepository).should().insertEvent(null);
     }
 
     @Test
@@ -156,13 +155,14 @@ class EventServiceTest {
         //given
         Long eventId = 1L;
         EventDTO dto = createEventDTO(1L,"오후운동",false);
-
+        given(eventRepository.updateEvent(eventId,dto)).willReturn(true);
         //when
         boolean result = sut.modifyEvent(eventId,dto);
 
         //then
         assertThat(result).isTrue();
        // verify(eventRepository).update(eventId,dto);
+        then(eventRepository).should().updateEvent(eventId,dto);
     }
 
     @Test
@@ -170,25 +170,28 @@ class EventServiceTest {
     void modifyEventNoEventId() {
         //given
         EventDTO dto = createEventDTO(1L,"오후운동",false);
-       // given(eventRepository.updateEvent(null,dto)).willReturn(false);
+        given(eventRepository.updateEvent(null,dto)).willReturn(false);
         //when
         boolean result = sut.modifyEvent(null,dto);
 
         //then
         assertThat(result).isFalse();
+        then(eventRepository).should().updateEvent(null,dto);
     }
     @Test
     @DisplayName("이벤트 ID는 주는데 변경할 정보를 주지 않으면, 이벤트 정보 변경 중단하고 결과를 false로 보여준다")
     void modifyEventNoDto() {
         //given
         Long eventId = 1L;
-       // given(eventRepository.updateEvent(eventId,null)).willReturn(false);
+       given(eventRepository.updateEvent(eventId,null)).willReturn(false);
         //when
         boolean result = sut.modifyEvent(eventId,null);
 
         //then
         assertThat(result).isFalse();
         //verify(eventRepository).updateEvent(eventId,null);
+        then(eventRepository).should().updateEvent(eventId,null);
+
     }
 
     @Test
@@ -196,12 +199,14 @@ class EventServiceTest {
     void removeEvent() {
         //given
         Long eventId = 1L;
+        given(eventRepository.deleteEvent(eventId)).willReturn(true);
 
         //when
         boolean result = sut.removeEvent(eventId);
 
         //then
         assertThat(result).isTrue();
+        then(eventRepository).should().deleteEvent(eventId);
 
     }
 
@@ -210,12 +215,13 @@ class EventServiceTest {
     @DisplayName("이벤트 ID를 주지 않으면, 이벤트 삭제 결과를 false로 보여준디")
     void removeFalse() {
         //given
-
+        given(eventRepository.deleteEvent(null)).willReturn(false);
         //when
         boolean result = sut.removeEvent(null);
 
         //then
         assertThat(result).isFalse();
+        then(eventRepository).should().deleteEvent(null);
 
     }
 

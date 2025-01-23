@@ -40,30 +40,32 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
                                      LocalDateTime eventStartDatetime,
                                      LocalDateTime eventEndDatetime
     ) {
-        return eventRepository.findEvents();
+        return eventRepository.findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime);
     }
 
     //2. 단건 조회
     public Optional<EventDTO> findEvent(Long eventId){
-        return Optional.empty();
+
+        return eventRepository.findEvent(eventId);
     }
 
 
 
     //3.이벤트 생성
     public boolean createEvent(EventDTO eventDTO){
-        return true;
+
+        return eventRepository.insertEvent(eventDTO);
     }
 
     //3.이벤트 수정
     public boolean modifyEvent(Long eventId,EventDTO eventDTO){
         //eventId를 받아서 그 대상을 수정한 후 eventDTO로 내보내는 메서드
-        return true;
+        return eventRepository.updateEvent(eventId,eventDTO);
     }
 
     public boolean removeEvent(Long eventId){
         //eventId를 삭제하는 메서드
-        return true;
+        return eventRepository.deleteEvent(eventId);
     }
 
 }
