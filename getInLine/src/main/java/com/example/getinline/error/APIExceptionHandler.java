@@ -46,7 +46,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler
-    public ResponseEntity<Object> general(ConstraintViolationException e, WebRequest request){
+    public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request){
         ErrorCode errorCode = ErrorCode.VALIDATION_ERROR;
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
@@ -55,9 +55,9 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
                 APIErrorResponse.of(false,errorCode.getCode(),errorCode.getMessage(e)),
                 HttpHeaders.EMPTY,
                 status,
-                request);
+                request
+        );
     }
-
 
 
     @ExceptionHandler
