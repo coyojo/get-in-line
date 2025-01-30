@@ -55,7 +55,9 @@ class APIExceptionHandlerTest {
     @Test
     void givenGeneralException_whenCallingValidation_thenReturnsResponseEntity(){
         //given
-        GeneralException e = new  GeneralException("test message");
+        ErrorCode errorCode = ErrorCode.INTERNAL_ERROR;
+        GeneralException e = new  GeneralException(errorCode);
+
         webRequest = new DispatcherServletWebRequest(new MockHttpServletRequest());
         //when
         ResponseEntity<Object> response =  sut.general(e,webRequest);
@@ -64,7 +66,7 @@ class APIExceptionHandlerTest {
         response.getStatusCode();
         //then
         assertThat(response)
-                .hasFieldOrPropertyWithValue("body", APIErrorResponse.of(false, e.getErrorCode(),e))
+                .hasFieldOrPropertyWithValue("body", APIErrorResponse.of(false,errorCode,e))
                 .hasFieldOrPropertyWithValue("headers", HttpHeaders.EMPTY)
                 .hasFieldOrPropertyWithValue("statusCode", e.getErrorCode().isClientSideError() ? HttpStatus.BAD_REQUEST : HttpStatus.INTERNAL_SERVER_ERROR);
     }
