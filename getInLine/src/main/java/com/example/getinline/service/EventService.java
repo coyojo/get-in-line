@@ -1,7 +1,9 @@
 package com.example.getinline.service;
 
+import com.example.getinline.constant.ErrorCode;
 import com.example.getinline.constant.EventStatus;
 import com.example.getinline.dto.EventDTO;
+import com.example.getinline.exception.GeneralException;
 import com.example.getinline.repository.EventRepository;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -46,7 +48,17 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventStartDatetime,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime eventEndDatetime
     ) {
-        return eventRepository.findEvents(placeId,eventName,eventStatus,eventStartDatetime,eventEndDatetime);
+        try {
+            return eventRepository.findEvents(
+                    placeId,
+                    eventName,
+                    eventStatus,
+                    eventStartDatetime,
+                    eventEndDatetime);
+        }
+        catch (Exception e){
+            throw new GeneralException(ErrorCode.DATA_ACCESS_ERROR, e);
+        }
     }
 
     //2. 단건 조회

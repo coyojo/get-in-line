@@ -72,6 +72,25 @@ class APIExceptionHandlerTest {
     }
 
 
+    @DisplayName("기타(전체) 오류 - 응답 데이터 정의")
+    @Test
+    void givenOtherException_whenCallingValidation_thenReturnsResponseEntity(){
+        //given
+        Exception e = new  GeneralException();
+
+        //when
+        ResponseEntity<Object> response =  sut.exception(e,webRequest);
+        response.getBody();
+        response.getHeaders();
+        response.getStatusCode();
+        //then
+        assertThat(response)
+                .hasFieldOrPropertyWithValue("body", APIErrorResponse.of(false,ErrorCode.INTERNAL_ERROR,e))
+                .hasFieldOrPropertyWithValue("headers", HttpHeaders.EMPTY)
+                .hasFieldOrPropertyWithValue("statusCode",HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 
 
 

@@ -37,7 +37,8 @@ class ErrorCodeTest {
                 arguments(ErrorCode.SPRING_BAD_REQUEST,"spring-detected bad request - This is test message."),
                 arguments(ErrorCode.VALIDATION_ERROR,"validation error - This is test message."),
                 arguments(ErrorCode.INTERNAL_ERROR,"internal error - This is test message."),
-                arguments(ErrorCode.SPRING_INTERNAL_ERROR,"spring-detected internal error - This is test message.")
+                arguments(ErrorCode.SPRING_INTERNAL_ERROR,"spring-detected internal error - This is test message."),
+                arguments(ErrorCode.DATA_ACCESS_ERROR,"Data access error - This is test message.")
         );
     }
 
