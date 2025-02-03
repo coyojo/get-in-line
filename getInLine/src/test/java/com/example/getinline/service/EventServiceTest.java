@@ -97,7 +97,7 @@ class EventServiceTest {
        //존재하는 이벤트 조회니까 eventDTO를 Optional에 넣어서 보내준다.
         given(eventRepository.findEvent(eventId)).willReturn(Optional.of(eventDTO));
         //when
-        Optional<EventDTO> result = sut.findEvent(eventId);
+        Optional<EventDTO> result = sut.getEvent(eventId);
 
         //then
         assertThat(result).hasValue(eventDTO);
@@ -114,7 +114,7 @@ class EventServiceTest {
         given(eventRepository.findEvent(eventId)).willReturn(Optional.empty());
 
         //when
-        Optional<EventDTO> result = sut.findEvent(eventId);
+        Optional<EventDTO> result = sut.getEvent(eventId);
 
         //then
         assertThat(result).isEmpty();

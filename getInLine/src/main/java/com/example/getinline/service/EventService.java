@@ -62,7 +62,7 @@ public class EventService { //필터링으로 장소 이름 상태 기간을 이
     }
 
     //2. 단건 조회
-    public Optional<EventDTO> findEvent(Long eventId){
+    public Optional<EventDTO> getEvent(Long eventId){
 
         return eventRepository.findEvent(eventId);
     }
