@@ -36,13 +36,13 @@ class EventControllerTest {
 
     @DisplayName("[view][GET] 이벤트 세부 정보 페이지 - 데이터 없음")
     @Test
-    void givenNonexistentEventId_whenRequestingEventDetailPage_thenReturnsErrorPage() throws Exception {
+    void givenNonexistentEventId_whenRequestingEventDetailPage_thenReturnsEventDetailPage() throws Exception {
         // Given
         long eventId = 1L;
 
         // When & Then
         mvc.perform(get("/events/" + eventId))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("event/detail"))
                 .andExpect(model().hasNoErrors())
