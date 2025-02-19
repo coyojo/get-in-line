@@ -5,8 +5,8 @@ import com.example.getinline.dto.AdminRequest;
 import com.example.getinline.dto.LoginRequest;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api")
-@RestController
+//@RequestMapping("/api")
+//@RestController
 public class APIAuthController {
 
     //RestController는 뷰를 찾는게 아니라 return 내용을 body에 그대로 전달해줌

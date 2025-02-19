@@ -2,6 +2,7 @@ package com.example.getinline.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -13,6 +14,7 @@ public enum ErrorCode {
     BAD_REQUEST(10000, ErrorCategory.CLIENT_SIDE, "bad request"),
     SPRING_BAD_REQUEST(10001, ErrorCategory.CLIENT_SIDE, "spring-detected bad request"),
     VALIDATION_ERROR(10002, ErrorCategory.CLIENT_SIDE, "validation error"),
+    NOT_FOUND(10003,ErrorCategory.CLIENT_SIDE, "Requested resource is not found"),
     INTERNAL_ERROR(20000, ErrorCategory.SERVER_SIDE, "internal error"),
     SPRING_INTERNAL_ERROR(20001, ErrorCategory.SERVER_SIDE, "spring-detected internal error"),
     DATA_ACCESS_ERROR(20002,ErrorCategory.SERVER_SIDE,"Data access error")
@@ -23,9 +25,9 @@ public enum ErrorCode {
     private final String message;
 
     //예외가 있으면 메세지를 내보내게 메서드 생성
-    public String getMessage(Exception e){
-        System.out.println(this.getMessage()+" - "+ e.getMessage());
-        return getMessage(this.getMessage()+" - "+ e.getMessage());}
+    public String getMessage(Throwable e) {
+        return this.getMessage(this.getMessage() + " - " + e.getMessage());
+    }
 
     //메세지를 사용자가 입력하는 경우의 메서드
     public String getMessage(String message){

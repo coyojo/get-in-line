@@ -21,8 +21,8 @@ import java.util.List;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/api")
+//@RestController
+//@RequestMapping("/api")
 public class APIEventController {
     private final EventService eventService;
     @GetMapping("/events")  //전체 리스트 조회
